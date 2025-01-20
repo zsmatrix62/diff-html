@@ -70,7 +70,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref_name }}
-          release_name: ${{ github.ref_name }} # Use tag name directly
+          release_name: "latest"
           draft: false
           prerelease: false
           generate_release_notes: true
@@ -80,5 +80,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: target/wasm32-unknown-unknown/release/diff_html.wasm
-          asset_name: diff_html_${{ github.ref_name }}.wasm # Include version in filename
+          asset_name: diff_html.wasm
           asset_content_type: application/wasm
