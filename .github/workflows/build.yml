@@ -57,6 +57,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/wasm32-unknown-unknown/release/diff_html_optimized.wasm
+          asset_path: target/wasm32-unknown-unknown/release/diff_html.wasm
           asset_name: diff_html_${{ github.ref_name }}.wasm # Include version in filename
           asset_content_type: application/wasm
