@@ -20,4 +20,10 @@ clean:
 	cargo clean
 	rm -f diff_html_rs.wasm
 
-.PHONY: build clean install-extism test
+.PHONY: build clean install-extism test tag
+
+# Create git tag from Cargo.toml version and push to remote
+tag:
+	@version=$$(grep -m 1 '^version =' Cargo.toml | awk -F'"' '{print $$2}') && \
+	git tag -a v$$version -m "Version $$version" && \
+	git push origin v$$version
