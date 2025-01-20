@@ -41,6 +41,28 @@ jobs:
       - name: Build project
         run: make build
 
+      - name: Delete existing release if present
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/github-script@v6
+        with:
+          script: |
+            try {
+              await github.rest.repos.deleteRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: (await github.rest.repos.getReleaseByTag({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  tag: context.ref.replace('refs/tags/', '')
+                })).data.id
+              })
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error
+              }
+              // Release doesn't exist, continue
+            }
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
