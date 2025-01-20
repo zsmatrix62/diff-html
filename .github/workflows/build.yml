@@ -15,54 +15,48 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
           components: rustfmt, clippy
-      
+
       - name: Install wasm32 target
         run: rustup target add wasm32-unknown-unknown
-      
+
       - name: Install Extism CLI
         run: |
           curl -fsSL https://extism.org/install.sh | sh
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-      
+
       - name: Install wasm-opt
         run: |
           curl -L https://github.com/WebAssembly/binaryen/releases/download/version_116/binaryen-version_116-x86_64-linux.tar.gz -o binaryen.tar.gz
           tar -xzf binaryen.tar.gz
           echo "$(pwd)/binaryen-version_116/bin" >> $GITHUB_PATH
           rm binaryen.tar.gz
-      
+
       - name: Build project
         run: make build
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
+          release_name: ${{ github.ref_name }} # Use tag name directly
           draft: false
           prerelease: false
           generate_release_notes: true
-      
+
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./target/wasm32-unknown-unknown/release/diff_html.wasm
-          asset_name: diff_html.wasm
+          asset_path: target/wasm32-unknown-unknown/release/diff_html_optimized.wasm
+          asset_name: diff_html_${{ github.ref_name }}.wasm # Include version in filename
           asset_content_type: application/wasm
