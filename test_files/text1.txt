@@ -1,0 +1,1 @@
+A command line tool for generating and applying unified diffs between HTML files. The tool helps visualize and track changes in HTML documents by producing clean, semantic markup that clearly shows additions, deletions, and modifications.
