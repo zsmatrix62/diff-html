@@ -3,7 +3,7 @@ setup: install-extism
 	cargo install wasm-opt
 
 # Build with optimizations and minimal size
-build: setup
+build: 
 	cargo build --release --features extism --target wasm32-unknown-unknown
 	wasm-opt -Oz -o ./target/wasm32-unknown-unknown/release/diff_html.wasm ./target/wasm32-unknown-unknown/release/diff_html_rs.wasm
 

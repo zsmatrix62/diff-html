@@ -30,7 +30,11 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
       
       - name: Install wasm-opt
-        run: cargo install wasm-opt
+        run: |
+          curl -L https://github.com/WebAssembly/binaryen/releases/download/version_116/binaryen-version_116-x86_64-linux.tar.gz -o binaryen.tar.gz
+          tar -xzf binaryen.tar.gz
+          echo "$(pwd)/binaryen-version_116/bin" >> $GITHUB_PATH
+          rm binaryen.tar.gz
       
       - name: Build project
         run: make build
