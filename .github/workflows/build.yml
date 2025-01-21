@@ -44,28 +44,6 @@ jobs:
         env:
           OUTPUT_FILE: target/wasm32-unknown-unknown/release/diff_html.wasm
 
-      - name: Delete existing release if present
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/github-script@v6
-        with:
-          script: |
-            try {
-              await github.rest.repos.deleteRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                release_id: (await github.rest.repos.getReleaseByTag({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  tag: context.ref.replace('refs/tags/', '')
-                })).data.id
-              })
-            } catch (error) {
-              if (error.status !== 404) {
-                throw error
-              }
-              // Release doesn't exist, continue
-            }
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -82,6 +60,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.build.outputs.asset_name }}
-          asset_name: diff_html.wasm
+          asset_path: target/wasm32-unknown-unknown/release/diff_html_optimized.wasm
+          asset_name: diff_html_${{ github.ref_name }}.wasm
           asset_content_type: application/wasm
