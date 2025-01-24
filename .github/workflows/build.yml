@@ -43,6 +43,7 @@ jobs:
         run: make build
         env:
           OUTPUT_FILE: target/wasm32-unknown-unknown/release/diff_html.wasm
+          working-directory: ./distribution/
 
       - name: Create Release
         id: create_release

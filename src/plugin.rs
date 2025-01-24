@@ -1,9 +1,12 @@
 #[cfg(feature = "extism")]
 use crate::restore_from_diff;
 #[cfg(feature = "extism")]
-use extism_pdk::*;
+use base64;
 #[cfg(feature = "extism")]
+use extism_pdk::*;
 use serde::{Deserialize, Serialize};
+
+use crate::htmldiff::HtmlDiff;
 
 #[cfg(feature = "extism")]
 #[derive(Serialize, Deserialize)]
@@ -24,19 +27,16 @@ pub fn DiffHtml(input: String) -> FnResult<String> {
     // Parse input JSON
     let input: DiffInput = serde_json::from_str(&input)?;
 
-    // Generate diff lines using diff lib
-    let changes = diff::lines(&input.before, &input.after);
-    let unidiff_content: String = changes
-        .iter()
-        .map(|change| match change {
-            diff::Result::Left(s) => format!("-{}\n", s),
-            diff::Result::Both(s, _) => format!("{}\n", s),
-            diff::Result::Right(s) => format!("+{}\n", s),
-        })
-        .collect();
+    // Decode base64 strings
+    let before = String::from_utf8(base64::decode(&input.before)?)?;
+    let after = String::from_utf8(base64::decode(&input.after)?)?;
 
-    let diff_result = restore_from_diff(&unidiff_content);
+    let hd = HtmlDiff::new();
+    let diff_result = hd.diff(&before, &after);
 
-    // Return as plain string
-    Ok(diff_result)
+    // Encode result as base64
+    let encoded_result = base64::encode(diff_result);
+
+    // Return as base64 encoded string
+    Ok(encoded_result)
 }
